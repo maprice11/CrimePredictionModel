@@ -18,12 +18,131 @@ def sample_day(group):
   return group.sample(n)
 ```
 
-This function randomly selected one arrest per day to include in the final crime dataframe. 
+This function randomly selected one arrest per day to include in each city's dataframe. 
 
+Columns for each city were renamed to ensure consistency and city name was added to the dataframes. After collecting all of the arrest data (one arrest per day, per city, from 2018-2024) for each individual city in a separate dataframe, all cities were concatenated into a final crime dataframe. 
 
-### Fuzzy String NLP
+### Fuzzy String NLP & Variable Creation
 
-### Variable Creation
+A majority of time spent wrangling the data was assigning arrests to specific crime groups. 
+
+Using Fuzzy Strings, a form of Natural Language Processing, arrests were categorized into more generic crime categories. All arrests were passed through a basic fuzzy string function.
+
+```
+def match_crime(crime_type, threshold = 75):
+  # Ensure crime_type is a string before processing
+  crime_type_str = str(crime_type) if pd.notna(crime_type) else ''
+  if not crime_type_str.strip(): # Handle empty or whitespace-only strings
+      return 'Other'
+  match, score = process.extractOne(crime_type_str, categories)
+  return match if score >= threshold else 'Other'
+
+crime_df['Crime Group'] = crime_df['Crime'].apply(match_crime)
+```
+
+The function takes all arrest information and assigns it to one of the following categories at a 75% similarity level (if the arrest shares 75% of a similar description as the category).
+
+```
+categories = ['Assault', 'Robbery', 'Homicide', 'Theft',
+              'Burglary', 'Drug Offense', 'Sexual Assault', 'Vandalism', 'Trespassing', 'Battery']
+```
+
+After the first pass, the remaining arrest records were passed through a second, much more thorough, function.
+
+```
+# Expand your categories with synonyms and alternate terms
+expanded_categories = {
+    'Theft'          : ['Theft', 'Larceny', 'Shoplifting', 'Stealing',
+                        'Pickpocket', 'Pilfering', 'Stolen', 'Purse snatching', 'Vehicle, Stolen', 'Carjacking', 'Bunco'],
+    'Assault'        : ['Assault', 'Battery', 'Intimidation',
+                        'Threatening', 'Menacing', 'Harassment', 'Strangulation', 'Kidnapping', 'Coercion',
+                        'Breath/Circ', 'AGG ASLT', 'Injury disabled individual'],
+    'Drug Offense'   : ['Drug', 'Narcotics', 'Controlled Substance',
+                        'Possession', 'Distribution', 'Cannabis', 'Marijuana', 'Meth'],
+    'Fraud'          : ['Fraud', 'Forgery', 'Embezzlement', 'Deception',
+                        'Identity Theft', 'Scam', 'Gambling', 'Credit Card', 'False Pretenses', 'Bad Checks', 'Money Laundering',
+                        'Records Falsify', 'Counterfeiting', 'Peddling', 'Breach of Computer Security'],
+    'Weapons'        : ['Weapons', 'Firearm', 'Gun', 'Armed', 'Carrying', 'Shots',
+                        'Concealed Carry'],
+    'Vandalism'      : ['Vandalism', 'Damage', 'Graffiti', 'Destruction', 'Arson', 'Criminal Mischief'],
+    'Trespassing'    : ['Trespassing', 'Unlawful Entry', 'Breaking', 'Trespass'],
+    'Public Order'   : ['Disorderly', 'Disturbing Peace', 'Public Intoxication',
+                        'DUI', 'Loitering', 'Impersonation', 'Driving', 'Contempt',
+                        'No Contact', 'Family Offenses', 'Terroristic Threat', 'Prowler', 'Public Peace',
+                        'Riot', 'Bail Jumping', 'Resisting Arrest', 'Perjury', 'Conspiracy', 'Family Disturbance', 'Obstructing Justice',
+                        'Suspicious Occ', 'DWI', 'DOC', 'DOC discharge gun'],
+    'Misdemeanor'    : ['Misdemeanor', 'Liquor Law', 'Criminal Mis', 'Moving Traffic', 'Failure to Yield', 'Sale School Grounds', 'False Report'],
+    'Sexual Misconduct' : ['Sexual Misconduct', 'Sex', 'Trafficking', 'Sex Offender', 'Pornography', 'Prostitution', 'Obscenity', 'Lewd', 'LETTERS, LEWD',
+                           'CSC 1st Degree'],
+    'Sexual Assault' : ['Rape', 'Sodomy', 'Exposure', 'Fondling', 'Oral Copulation', 'Forcible Touching'],
+    'Other'          : ['Other', 'Recovered Vehicle', 'Lost Property', 'Miscellaneous Investigation',
+                        'Warrant', 'Missing Adult'],
+    'Animal Cruelty'  : ['Animal Cruelty', 'Animal'],
+    'Child-Related Crimes' : ['Child', 'Endangerment', 'Crm Agnst Chld', 'Pre Delinquency', 'Online Solicitation of a Minor'],
+    'Homicide' : ['Murder', 'Manslaughter'],
+    'Terrorism' : ['Bomb Scare'],
+    'Uncategorized' : ['Unclassified']
+
+}
+
+def second_fuzzy_pass(crime_label, threshold=70):
+    # This function expects crime_label to be a native Python string due to the .astype(str) call below.
+    # Defensive checks are still useful for clarity but less critical with prior type enforcement.
+    crime_label_str = str(crime_label)
+    if not crime_label_str.strip():
+        return 'Other'
+
+    best_score = 0
+    best_category = 'Uncategorized'
+
+    for category, synonyms in expanded_categories.items():
+        match, score = process.extractOne(crime_label_str, synonyms)
+        if score > best_score:
+            best_score = score
+            best_category = category
+
+    return best_category if best_score >= threshold else 'Uncategorized'
+
+# Ensure the 'Crime' column is of string type before applying fuzzy matching
+# This is crucial to prevent TypeErrors from fuzzy matching library's C++ bindings
+crime_df['Crime'] = crime_df['Crime'].astype(str)
+
+# Apply ONLY to rows currently labeled Other
+crime_df.loc[others, 'Crime Group'] = (
+    crime_df.loc[others, 'Crime'].apply(second_fuzzy_pass)
+)
+```
+
+The second pass allowed for arrests to be assigned to crime categories based on specific synonyms and alternate terms for the crime. All further unknown crimes were assigned to Uncategorized. 
+
+Finally, each crime group was assigned a violence rating out of 10, which were as follows:
+
+```
+    'Homicide'             : 10,
+    'Sexual Assault'       : 9,
+    'Terrorism'            : 9,
+    'Child-Related Crimes' : 8,
+    'Robbery'              : 8,
+    'Sexual Misconduct'    : 7,
+    'Assault'              : 6,
+    'Battery'              : 6,
+    'Weapons'              : 5,
+    'Burglary'             : 4,
+    'Trespassing'          : 3,
+    'Drug Offense'         : 2,
+    'Vandalism'            : 2,
+    'Fraud'                : 1,
+    'Theft'                : 1,
+    'Public Order'         : 2,
+    'Animal Cruelty'       : 2,
+    'Misdemeanor'          : 1,
+    'Other'                : 0,
+    'Uncategorized'        : 0
+```
+
+The violence ratings were mapped onto the dataframe based on the crime group. 
+
+<sub><sup> The use of Fuzzy Strings was assisted using Claude AI. </sup></sub> 
 
 ### Combining Datasets
 
