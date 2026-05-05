@@ -1,6 +1,6 @@
 # Predicting Criminal Behavior in Major US Cities
 
-This project ultimately aims to create a prediction model that collects demographic data of a city and produces a predicted violence rating of a city on a scale of 0 (No Violence) to 10 (Extremely Violent). Other statistical analyses were implemented to test the model's efficiency.
+This final project in my Data Science Project/Portfolio Class was conducted as my cumulative understanding of my teachings under Belmont University's data science program. It ultimately aims to create a prediction model that collects demographic data of a city and produces a predicted violence rating of a city on a scale of 0 (No Violence) to 10 (Extremely Violent). Other statistical analyses were implemented to test the model's efficiency.
 
 ## Data Wrangling and Cleaning
 <sub><sup> Detailed programming used for data wrangling and cleaning can be found under this repository's file: Final_Project_Dataframe_cleaning. </sup></sub> 
@@ -302,14 +302,26 @@ Figure 3 describes the predicted violence score vs. actual violence score that i
 
 ### Random Forest Decision Tree
 
-A random forest 
+A random forest model was also included in analyzing model efficiency.
+
+```
+Random Forest        R^2: 0.718 +/- 0.127 | RMSE: 0.278 +/- 0.070
+
+ Random Forest feature importances:
+Component  Importance
+      PC3    0.488858
+      PC2    0.447998
+      PC1    0.063144
+```
+
+It tells a similar story, in that PC3 is the most important component in the model, which is also illustrated in Figure 4. Figure 4 also analyzes all 4 models created. Since Random Forest has the highest R^2 value, and the least amount of standard error, the final prediction model was built with Random Forest. 
 
 ## Figure 4
 <img width="1189" height="593" alt="Random Forest Models" src="https://github.com/user-attachments/assets/5c616ea6-fa3d-406d-b425-d4595cb32864" />
 
 ### Final Model
 
-The final prediction model was built using a Random Forest Decision Tree. Users are able to adjust the city_predict dictionary to input any specific demographics. The dictionary for demographics on Nashville are as follows:
+Users are able to adjust the city_predict dictionary to input any specific demographics. The dictionary for demographics on Nashville are as follows:
 
 ```
 city_predict = {
@@ -408,8 +420,6 @@ Principal Component Analysis (PCA) - 1
 Combining Datasets - 0.5
 
 Feature Selection/Engineering - 0.5
-
-Bootstrap Confidence Intervals - 1.5
 
 Natural Language Processing (Fuzzy String) - 2
 
