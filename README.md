@@ -3,6 +3,7 @@
 This project ultimately aims to create a prediction model that collects demographic data of a city and produces a predicted violence rating of a city on a scale of 0 (No Violence) to 10 (Extremely Violent). Other statistical analyses were implemented to test the model's efficiency.
 
 ## Data Wrangling and Cleaning
+<sub><sup> Detailed programming used for data wrangling and cleaning can be found under this repository's file: Final_Project_Dataframe_cleaning. </sup></sub> 
 
 Data was collected from seven cities (Austin, San Francisco, Los Angeles, New York, Chicago, Seattle, and Detroit) that included demographic information from the United States Census website and crime data queried from open source government datasets that were available from each city's databases. 
 
@@ -167,31 +168,146 @@ The crime dataset was left-joined with the census data set into a final master d
 
 ### Feature Engineering
 
+Columns that were skewed/had extreme differences were logged.
+
+```
+#transforming skewed columns/extreme differences
+log_cols = [
+    'Population',
+    'HousingUnits',
+    'Households',
+    'Asian',
+    'Black or African American',
+    'White',
+    'Hispanic or Latino',
+    'American Indian and Alaska Native',
+    'Poverty (percent)',
+    'Residential Mobility (percent)',
+]
+```
+Feature variables that were included were all columns in the master dataset besides the following:
+
+```
+    'City',
+    'Year',
+    'Avg_Violence_Score',
+    'Violent_Crime_Count',
+    'Violent_Crime_Rate',
+    'Total_Arrests',
+    'Largest Housing Value',
+
+```
+
+Non-logged variables were also dropped from feature variables. 
+
+All of the feature variables were scaled to standardize the data. 
 
 ## Data Analysis
+<sub><sup> Detailed programming used for data analyses can be found under this repository's file: Dataset Merging and Analyses. </sup></sub> 
+
+The analyses that were conducted on the data were a Principal Component Analysis, Linear Regression, Ridge Regression, Lasso Regression, and a Random Forest Decision Tree. 
 
 ### Principal Component Analysis (PCA)
 
+Because there were so many demographic variables (31 in total), it was necessary to boil down the variables to feature components that would explain at least 90% of the variance that the original model with all 31 variables would. A PCA was run to determine how many components would lead to this minimum variance. 
+
+It was found that the PCA took 31 variables and found 3 components that accounted for 93.2% of the variance explained by the original model. 
+
+```
+
+PCA: 31 features -> 3 components
+Variance explained: 93.2%
+PC 1: 43.2%
+PC 2: 35.0%
+PC 3: 15.1%
+
+```
+
+The top three components that drove each component were:
+
+```
+
+PC1: log_Asian, Foreign-born (percent), Homeownership Rate(percent)
+PC2: log_Black or African American, Graduate or Professional (percent), Education (percent)
+PC3: Health (percent), Older Pop (percent), Age
+
+```
+
+Figure 2 describes the amount of variance explained by each component and the cumulative variance explained by the components. It also illustrates which specific cities are influenced most greatly by the first and second principal component. 
+
+
+## Figure 2
 <img width="1186" height="593" alt="Principal Component Analysis" src="https://github.com/user-attachments/assets/b0ba3900-4e8b-4661-bb35-ac58e26e708b" />
 
 ### Cross Validation
 
+All of the following models were cross validated using 5-fold CV to ensure there was no overfitting. 
+
+```
+
+#cross validation setup (5 k fold)
+kf = KFold(n_splits=5, shuffle=True, random_state=42)
+
+def evaluate_model(name, model, X, y, cv):
+  scores = cross_val_score(model, X, y, cv=cv, scoring='r2')
+  rmse_scores = np.sqrt(-cross_val_score(model, X, y, cv=cv, scoring='neg_mean_squared_error'))
+  print(f"{name:<20} R^2: {scores.mean():.3f} +/- {scores.std():.3f} | "
+        f"RMSE: {rmse_scores.mean():.3f} +/- {rmse_scores.std():.3f}")
+  return scores
+
+```
+
 ### Regression Models
+
+The R^2 values of each model indicate how much variance is explained by each model, the closer the value is to 1, the stronger the model.
 
 #### Linear Regression
 
+```
+
+Model Results (5-fold cross validation):
+Linear Regression    R^2: 0.714 +/- 0.184 | RMSE: 0.262 +/- 0.065
+
+Coefficients: ['PC1: -0.069', 'PC2: 0.115', 'PC3: 0.142']
+
+```
+PC3 is the most influential component in the model.
+
 #### Ridge Regression
+
+```
+Ridge Regression     R^2: 0.714 +/- 0.181 | RMSE: 0.263 +/- 0.064
+ Best alpha: 0.01
+
+```
+PCA already did the heavy lifting of reducing variables into components, so an alpha of 0.01 indicates that the ridge regression barely needs to penalize anything. 
 
 #### Lasso Regression
 
+```
+Lasso Regression     R^2: 0.716 +/- 0.183 | RMSE: 0.261 +/- 0.065
+ Best alpha: 0.0012
+ Nonzero coefficients: 3/3 components kept
+
+```
+
+Utilizing lasso regression, it was found that all 3 components that were evaluated using PCA are necessary to the model and should not be dropped. 
+
+Figure 3 describes the predicted violence score vs. actual violence score that is described by the Linear Regression Model. It also evaluates the predicted coefficient values for each model, with all thre models having basically exact coefficient values and PC3 being the component with the highest predictor value in the model.
+
+## Figure 3
 <img width="1189" height="593" alt="Regression Models" src="https://github.com/user-attachments/assets/e38b79ee-fb46-42fd-a188-d0b64369c0e4" />
 
 ## Prediction Model
 
 ### Random Forest Decision Tree
 
+A random forest 
+
+## Figure 4
 <img width="1189" height="593" alt="Random Forest Models" src="https://github.com/user-attachments/assets/5c616ea6-fa3d-406d-b425-d4595cb32864" />
 
+### Final Model
 
 The final prediction model was built using a Random Forest Decision Tree. Users are able to adjust the city_predict dictionary to input any specific demographics. The dictionary for demographics on Nashville are as follows:
 
