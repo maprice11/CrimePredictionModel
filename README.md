@@ -1,4 +1,5 @@
 # Predicting Criminal Behavior in Major US Cities
+## Madi Price
 
 This final project in my Data Science Project/Portfolio Class was conducted as my cumulative understanding of my teachings under Belmont University's data science program. It ultimately aims to create a prediction model that collects demographic data of a city and produces a predicted violence rating of that city on a scale of 0 (No Violence) to 10 (Extremely Violent). Other statistical analyses were implemented to test the model's efficiency.
 
