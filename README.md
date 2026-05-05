@@ -146,9 +146,27 @@ The violence ratings were mapped onto the dataframe based on the crime group.
 
 ### Combining Datasets
 
+The crime dataset was aggregated to be on a per year level, rather than per day, for each city. This allows for the demographic data to be more relevant in analyses, since it is the same data across all years. 
+
+```
+city_year = crime.groupby(['City', 'Year']).agg(
+    Total_Arrests = ('Crime', 'count'),
+    Avg_Violence_Score = ('Violence Rating', 'mean'),
+    Violent_Crime_Count = ('Violence Rating', lambda x: (x >= 6).sum())
+).reset_index()
+```
+
+Each city has a violent crime rating per year, which is an average of the randomly selected one arrest per day that was used in the original crime data frame. 
+
+A new variable, Violent Crime Rate, was created to see what percentage of all crimes in a city each year were considered violent (average crime score is greater than 6).
+
+The crime dataset was left-joined with the census data set into a final master dataframe. The violence score breakdowns of each city are reflected in Figure 1.
+
+## Figure 1
+<img width="1189" height="593" alt="Demographic Information" src="https://github.com/user-attachments/assets/0b785100-59e0-4422-8e39-f26a551b58c6" />
+
 ### Feature Engineering
 
-<img width="1189" height="593" alt="Demographic Information" src="https://github.com/user-attachments/assets/0b785100-59e0-4422-8e39-f26a551b58c6" />
 
 ## Data Analysis
 
