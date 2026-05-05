@@ -4,9 +4,21 @@ This project ultimately aims to create a prediction model that collects demograp
 
 ## Data Wrangling and Cleaning
 
+Data was collected from seven cities (Austin, San Francisco, Los Angeles, New York, Chicago, Seattle, and Detroit) that included demographic information from the United States Census website and crime data queried from open source government datasets that were available from each city's databases. 
+
 ### Data Collection
 
-Data was collected from seven cities (Austin, San Francisco, Los Angeles, New York, Chicago, Seattle, and Detroit) that included demographic information from the United States Census website and crime data queried from open source government datasets that were available from each city's databases. 
+Demographic information was manually input into an Excel file. This file included the demographic breakdown of each city and included 31 demographic variables with information that included things like education, racial breakdown, poverty, and health factors of each city. 
+
+Arrest data was collected from each city that collected every single arrest from 2018 - 2024. Every arrest date was reformatted to ensure that there was a consistent format for every city.
+
+```
+def sample_day(group):
+  n = min(len(group), 1)
+  return group.sample(n)
+```
+
+This function randomly selected one arrest per day to include in the final crime dataframe. 
 
 
 ### Fuzzy String NLP
