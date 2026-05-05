@@ -222,7 +222,7 @@ PC 2: 35.0%
 PC 3: 15.1%
 ```
 
-The top three components that drove each component were:
+The top three variables that drove each component were:
 
 ```
 PC1: log_Asian, Foreign-born (percent), Homeownership Rate(percent)
