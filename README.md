@@ -6,6 +6,9 @@ This project ultimately aims to create a prediction model that collects demograp
 
 ### Data Collection
 
+Data was collected from seven cities (Austin, San Francisco, Los Angeles, New York, Chicago, Seattle, and Detroit) that included demographic information from the United States Census website and crime data queried from open source government datasets that were available from each city's databases. 
+
+
 ### Fuzzy String NLP
 
 ### Variable Creation
@@ -39,6 +42,7 @@ This project ultimately aims to create a prediction model that collects demograp
 ### Random Forest Decision Tree
 
 <img width="1189" height="593" alt="Random Forest Models" src="https://github.com/user-attachments/assets/5c616ea6-fa3d-406d-b425-d4595cb32864" />
+
 
 The final prediction model was built using a Random Forest Decision Tree. Users are able to adjust the city_predict dictionary to input any specific demographics. The dictionary for demographics on Nashville are as follows:
 
@@ -147,10 +151,3 @@ Natural Language Processing (Fuzzy String) - 2
 Ridge/Lasso Regression - 1
 
 Cross Validation - 0.5
-
-
-
-```
-Give examples
-```
-
