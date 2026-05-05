@@ -210,28 +210,24 @@ The analyses that were conducted on the data were a Principal Component Analysis
 
 ### Principal Component Analysis (PCA)
 
-Because there were so many demographic variables (31 in total), it was necessary to boil down the variables to feature components that would explain at least 90% of the variance that the original model with all 31 variables would. A PCA was run to determine how many components would lead to this minimum variance. 
+Because there were so many demographic variables (31 in total), it was necessary to boil down the variables to principal components that would explain at least 90% of the variance that the original model with all 31 variables would. A PCA was run to determine how many components would lead to this minimum variance. 
 
 It was found that the PCA took 31 variables and found 3 components that accounted for 93.2% of the variance explained by the original model. 
 
 ```
-
 PCA: 31 features -> 3 components
 Variance explained: 93.2%
 PC 1: 43.2%
 PC 2: 35.0%
 PC 3: 15.1%
-
 ```
 
 The top three components that drove each component were:
 
 ```
-
 PC1: log_Asian, Foreign-born (percent), Homeownership Rate(percent)
 PC2: log_Black or African American, Graduate or Professional (percent), Education (percent)
 PC3: Health (percent), Older Pop (percent), Age
-
 ```
 
 Figure 2 describes the amount of variance explained by each component and the cumulative variance explained by the components. It also illustrates which specific cities are influenced most greatly by the first and second principal component. 
@@ -245,7 +241,6 @@ Figure 2 describes the amount of variance explained by each component and the cu
 All of the following models were cross validated using 5-fold CV to ensure there was no overfitting. 
 
 ```
-
 #cross validation setup (5 k fold)
 kf = KFold(n_splits=5, shuffle=True, random_state=42)
 
@@ -255,7 +250,6 @@ def evaluate_model(name, model, X, y, cv):
   print(f"{name:<20} R^2: {scores.mean():.3f} +/- {scores.std():.3f} | "
         f"RMSE: {rmse_scores.mean():.3f} +/- {rmse_scores.std():.3f}")
   return scores
-
 ```
 
 ### Regression Models
@@ -265,12 +259,10 @@ The R^2 values of each model indicate how much variance is explained by each mod
 #### Linear Regression
 
 ```
-
 Model Results (5-fold cross validation):
 Linear Regression    R^2: 0.714 +/- 0.184 | RMSE: 0.262 +/- 0.065
 
 Coefficients: ['PC1: -0.069', 'PC2: 0.115', 'PC3: 0.142']
-
 ```
 PC3 is the most influential component in the model.
 
@@ -279,7 +271,6 @@ PC3 is the most influential component in the model.
 ```
 Ridge Regression     R^2: 0.714 +/- 0.181 | RMSE: 0.263 +/- 0.064
  Best alpha: 0.01
-
 ```
 PCA already did the heavy lifting of reducing variables into components, so an alpha of 0.01 indicates that the ridge regression barely needs to penalize anything. 
 
@@ -289,7 +280,6 @@ PCA already did the heavy lifting of reducing variables into components, so an a
 Lasso Regression     R^2: 0.716 +/- 0.183 | RMSE: 0.261 +/- 0.065
  Best alpha: 0.0012
  Nonzero coefficients: 3/3 components kept
-
 ```
 
 Utilizing lasso regression, it was found that all 3 components that were evaluated using PCA are necessary to the model and should not be dropped. 
@@ -394,7 +384,6 @@ print("  2-4  → Low violence")
 print("  4-6  → Moderate violence")
 print("  6-8  → High violence")
 print("  8-10 → Very high violence")
-
 ```
 
 Output for the demographics of Nashville:
