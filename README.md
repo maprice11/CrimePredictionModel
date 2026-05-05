@@ -1,6 +1,6 @@
 # Predicting Criminal Behavior in Major US Cities
 
-This final project in my Data Science Project/Portfolio Class was conducted as my cumulative understanding of my teachings under Belmont University's data science program. It ultimately aims to create a prediction model that collects demographic data of a city and produces a predicted violence rating of a city on a scale of 0 (No Violence) to 10 (Extremely Violent). Other statistical analyses were implemented to test the model's efficiency.
+This final project in my Data Science Project/Portfolio Class was conducted as my cumulative understanding of my teachings under Belmont University's data science program. It ultimately aims to create a prediction model that collects demographic data of a city and produces a predicted violence rating of that city on a scale of 0 (No Violence) to 10 (Extremely Violent). Other statistical analyses were implemented to test the model's efficiency.
 
 ## Data Wrangling and Cleaning
 <sub><sup> Detailed programming used for data wrangling and cleaning can be found under this repository's file: Final_Project_Dataframe_cleaning. </sup></sub> 
