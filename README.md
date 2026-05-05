@@ -203,7 +203,7 @@ Non-logged variables were also dropped from feature variables.
 All of the feature variables were scaled to standardize the data. 
 
 ## Data Analysis
-<sub><sup> Detailed programming used for data analyses can be found under this repository's file: Dataset Merging and Analyses. </sup></sub> 
+<sub><sup> Detailed programming used for data analyses can be found under this repository's file: Dataset_Merging_and_Analyses. </sup></sub> 
 
 The analyses that were conducted on the data were a Principal Component Analysis, Linear Regression, Ridge Regression, Lasso Regression, and a Random Forest Decision Tree. 
 
